@@ -1,21 +1,25 @@
 <div class="container custom-scroll-main" style="border-left-style: groove; border-right-style: groove;" >
     <div class="row custom-top-header-menu-color">
-        <div class="col-sm-4 custom-column-wo-padding" >
-            <nav class="navbar  custom-nav-bar text-center">
-                   Tasks(${taskCount})
-            </nav>
-        </div>
+        <div class="col-sm-4 text-center" >
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <span class="nav-link" >Tasks(${taskCount})</span>
+                </li>
+            </ul>
+         </div>
         <div class="col-sm-8 text-center" style="border-left-style: groove;">
-            <nav class="navbar  custom-nav-bar text-center">
-                Details Page
-            </nav>
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <span class="nav-link" >Details Page </span>
+                </li>
+            </ul>
         </div>
     </div><!-- header menu -->
     <div class="row" style="height: 90vh" >
         <div class="col-sm-4" style="padding-right: 0; padding-left: 0; height: 100%;" >
             <div class="row">
                 <div class="col-sm-12" >
-                    <div class="input-group">
+                    <div class="input-group" style="padding: 4">
                         <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
                         <div class="input-group-append">
                             <span class="input-group-text" style="font-size: 1.5rem;">
@@ -25,9 +29,9 @@
                     </div>
 
                 </div>
-            </div>
+            </div> <!-- search area -->
             <div class="row custom-scroll-row" style="margin-right: 0; height: 100%">
-                <div class="col-sm-12 custom-scroll-column" style="padding-right: 0; margin-bottom: 2.5em;">
+                <div class="col-sm-12 custom-scroll-column" style="padding-right: 0; margin-bottom: 3em;">
                     <div id="tasklist" class="list-group list-group-flush">
                         <g:each in="${taskList}" var="task">
                             <a href="#" class="list-group-item list-group-item-action">
@@ -47,7 +51,7 @@
             </div>
         </div>
         <div class="col-sm-8" style="height: 100%;border-left-style: groove;">
-            <div class="row" style="background-color: #fafafa; height: 15%">
+            <div class="row" style="background-color: #fafafa; height: 13%">
                 <div style="margin: 2em; width: 100%">
                     <div >
                         <h4 >${selectedTask?.name}</h4>
@@ -69,8 +73,8 @@
                     </div>
                 </div>
             </div> <!-- Header -->
-        <div class="row" style="margin: 1em; ">
-            <nav style="width: 100%">
+        <div class="row custom-tabs-panel">
+            <nav style="margin: 1em; width: 100%">
                 <div class="nav nav-tabs " id="nav-tab" role="tablist" >
                     <a class="nav-item nav-link active text-sm-center custom-tabs" id="nav-info-tab" data-toggle="tab" href="#nav-info" role="tab" aria-controls="nav-info" aria-selected="true">
                         <i class="fa fa-info-circle fa-3x" aria-hidden="true"></i><br>Info
@@ -83,10 +87,58 @@
         </div> <!-- Tabs -->
         <div class="row" style="margin: 2em">
             <div class="tab-content" id="nav-tabContent">
-                <div class="tab-pane fade show active" id="nav-info" role="tabpanel" aria-labelledby="nav-home-tab">
+                <div class="tab-pane fade show active" id="nav-info" role="tabpanel" aria-labelledby="nav-info-tab" style="margin: 2em">
+                    <!-- switch edit and display mode -->
+                    <g:if test="${show}">
+                        <table>
+                            <tr>
+                                <td class="custom-label">Title:</td>
+                                <td>${selectedTask.name}</td>
+                            </tr>
+
+                            <tr id="subTitleLine" >
+                                <td class="custom-label" style="padding-top: 0.5rem">Subtitle:</td>
+                                <td  id="subTitleValue" style="padding-top: 0.5rem">${selectedTask.subName}</td>
+                            </tr>
+
+                            <tr>
+                                <td class="custom-label"  style="padding-top: 0.5rem">Description:</td>
+                                <td  style="padding-top: 0.5rem">${selectedTask.text}</td>
+                            </tr>
+                        </table>
+                    </g:if>
+                    <g:else >
+                        <g:form url="[resource:selectedTask, action:'update']" id="${selectedTask.id}" method="PUT" >
+                            <g:hiddenField name="version" value="${selectedTask?.version}" />
+                            <fieldset class="buttons">
+                                <g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
+                            </fieldset>
+                            <fieldset class="form">
+                                <div style="margin-bottom: 0.5rem" class="fieldcontain ${hasErrors(bean: selectedTask, field: 'name', 'error')} ">
+                                    <label class="custom-label" for="taskName">Title:</label>
+                                    <g:textField type="text" name="taskName" value="${selectedTask?.name}" size="40"></g:textField>
+                                </div>
+                                <div style="margin-bottom: 0.5rem" class="fieldcontain ${hasErrors(bean: selectedTask, field: 'subName', 'error')} ">
+                                    <label class="custom-label" for="subName">Subtitle:</label>
+                                    <g:textField type="text" name="subName" value="${selectedTask?.subName}" size="40"></g:textField>
+                                </div>
+                                <div style="margin-bottom: 0.5rem" class="fieldcontain ${hasErrors(bean: selectedTask, field: 'text', 'error')} ">
+                                    <label class="custom-label" for="taskText">Description:</label>
+                                    <g:textArea name="taskText" value="${selectedTask?.text}" rows="5" cols="41"></g:textArea>
+                                </div>
+                            </fieldset>
+
+
+                        </g:form>
+
+
+                    </g:else>
+                    <!-- end switch mode -->
+
 
                 </div>
-                <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-profile-tab">
+                <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab" style="margin: 2em">
+
 
                 </div>
             </div>
@@ -97,131 +149,86 @@
     </div> <!-- workspace -->
     <div class="row">
         <div class="col-sm-4 custom-column-wo-padding" >
-            <div class="navbar navbar-dark bg-dark custom-footer"
+            <nav class="navbar navbar-dark bg-dark custom-footer justify-content-end"
                  style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                Footer of Master Page
-            </div>
+                <button type="button" class="btn btn-outline-light ">
+                    <i class="fa fa-filter"></i>
+                </button>
+            </nav>
         </div>
 
-        <div class="col-sm-8 custom-column-wo-padding custom-footer" style="border-left-style: groove;">
-            <div class="navbar navbar-dark bg-dark "
+        <div class="col-sm-8 custom-column-wo-padding " style="border-left-style: groove;">
+            <nav class="navbar navbar-dark bg-dark custom-footer justify-content-end "
                  style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
-                Footer of Details Page
-            </div>
+                <g:if test="${show}">
+                    <g:link action="edit" id="${selectedTask.id}">
+                        <button type="button" class="btn btn-primary btn-sm custom-btn custom-showBtn" ><i class="fa fa-pencil" aria-hidden="true"></i>
+                            Edit</button>
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <!--<button type="submit" name="_action_update" class="btn btn-success btn-sm custom-btn custom-editBtn"><i class="fa fa-save" aria-hidden="true"></i>
+                        Save</button>-->
+                    <g:link name="create" id="${selectedTask.id}" action="update" class="save btn btn-success btn-sm custom-btn custom-editBtn" method="POST">
+                        <i class="fa fa-save" aria-hidden="true"></i>Save
+                    <!--<button type="button" name="updateTask" class="btn btn-success btn-sm custom-btn custom-editBtn"><i class="fa fa-save" aria-hidden="true"></i>
+                        Save</button>-->
+                    </g:link>
+
+                    <g:link action="display" id="${selectedTask.id}">
+                        <button type="button" class="btn btn-secondary btn-sm custom-btn custom-editBtn"><i class="fa fa-times" aria-hidden="true"></i>
+                            Cancel</button>
+                    </g:link>
+
+                    <button type="button" class="btn btn-danger btn-sm custom-btn custom-editBtn"><i class="fa fa-trash" aria-hidden="true"></i>
+                        Delete</button>
+                </g:else>
+                    <button type="button" class="btn btn-outline-light ">
+                        <g:if test="${selectedTask.finished}">
+                            <i class="fa fa-undo" aria-hidden="true"></i>
+                        </g:if>
+                        <g:else>
+                            <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                        </g:else>
+                    </button>
+            </nav>
         </div>
     </div> <!-- footer -->
 
 </div>
 
+<script>
+    // check if subtitle is empty then hide it
+    var subTitleValue = document.getElementById("subTitleValue"),
+        subTitleLine = document.getElementById("subTitleLine");
 
-    <!--<div class="row">
-        <div class="col-sm-4 custom-column-wo-padding" >
-            <nav class="navbar navbar-light fixed-top custom-nav-bar">
-                <p class="text-center h4">Tasks(${taskCount})</p>
-            </nav>
-        </div>
-
-        <div class="col-sm-8 custom-column-wo-padding">
-            <nav class="navbar navbar-light fixed-top custom-nav-bar" }">
-                <p class="text-center h4">Details Page</p>
-            </nav>
-        </div>
-
-    </div>
-
-    <div class="row" style="height: 90vh" >
-        <div class="col-sm-4" style="border-left-style: groove; padding-right: 0; padding-left: 0; height: 100%;" >
-            <div class="row">
-                <div class="col-sm-12" >
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
-                        <span class="input-group-addon" id="basic-addon1">
-                            <i class="fa fa-search" aria-hidden="true"></i>
-                        </span>
-                        <span class="input-group-addon" id="basic-addon1">
-                            <i class="fa fa-refresh" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="row custom-scroll-row" style="margin-right: 0; height: 100%">
-                <div class="col-sm-12 custom-scroll-column" style="padding-right: 0; margin-bottom: 2.5em;">
-                    <div id="tasklist" class="list-group list-group-flush">
-                        <g:each in="${taskList}" var="task">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                <h4>${task.name}</h4>
-                                <p> Task ID: ${task.id}
-                                    <g:if test="${task.finished == true}">
-                                        <span style="float: right"  class="text-success">completed</span>
-                                    </g:if>
-                                    <g:else>
-                                        <span style="float: right"  class="text-danger">not completed</span>
-                                    </g:else>
-                                </p>
-                            </a>
-                        </g:each>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-8" style="border-left-style: groove; border-right-style: groove;height: 100%;">
-            <div class="row" style="background-color: #fafafa; height: 15%">
-                <div class="row">
-                    <h1></h1>
-                </div>
-                <div class="row "style="margin-left: 3em;">
-                    <h3 >${selectedTask?.name}</h3>
-                </div>
-                <div class="row">
-                    <h1></h1>
-                </div>
-                <div class="row"style="margin-left: 3em; margin-right: 3em;">
-                    <p> Task ID: ${selectedTask.id}
-                        <g:if test="${selectedTask.finished == true}">
-                            <span style="float: right"  class="text-success">completed</span>
-                        </g:if>
-                        <g:else>
-                            <span style="float: right"  class="text-danger">not completed</span>
-                        </g:else>
-                    </p>
-                </div>
-            </div> <!-- Header -->
-            <!--<div class="row" >
-            <ul class="nav nav-tabs nav" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Contact</a>
-                </li>
-            </ul>
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">Home Details</div>
-                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">Profile Details</div>
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">Contact Details</div>
-            </div>
-
-        </div> <!-- Tabs -->
-        <!--</div>
-    </div>
+    if(subTitleValue.textContent.length > 0){
+        subTitleLine.hidden = false;
+    }else{
+        subTitleLine.hidden = true;
+    }
 
 
-    <div class="row ">
-        <div class="col-sm-4 custom-column-wo-padding" >
-            <div class="navbar navbar-inverse fixed-bottom custom-footer "
-                 style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                Footer of Master Page
-            </div>
-        </div>
+    function onPressEdit(status) {
+        var edits = document.getElementsByClassName("custom-editBtn"),
+            shows = document.getElementsByClassName("custom-showBtn");
 
-        <div class="col-sm-8 custom-column-wo-padding">
-            <div class="navbar navbar-inverse fixed-bottom custom-footer"
-                 style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
-                Footer of Details Page
-            </div>
-        </div>
-    </div>-->
+        for(var i = 0; i< edits.length; i++){
+            var btn = edits[ i ];
+            btn.hidden = !status;
+        }
+
+        for(var i = 0; i< shows.length; i++){
+            var btn = shows[ i ];
+            btn.hidden = status;
+        }
+
+    }
+
+    function onPressShow() {
+        $('.custom-showBtn').show()
+        $('.custom-editBtn').hide()
+    }
+
+</script>
 

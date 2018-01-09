@@ -158,11 +158,22 @@ body {
   background-color: #eff4f9;
 }
 
-.custom-input-group-addon{
-    display: block;
-}
 .custom-tabs {
     width: 8em;
 }
 
+.custom-tabs-panel{
+    background-color: #eff4f9;
+}
+.custom-label {
+    width: 140px;
+    text-align: right;
+    vertical-align: top;
+    padding-right: 10px;
+}
+
+.custom-btn{
+  width: 5rem;
+  margin: 0 .25rem;
+}
 
