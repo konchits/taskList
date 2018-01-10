@@ -2,10 +2,13 @@ package todolist
 
 class TaskController {
 
+    def operationsService
+
     //static scaffold = Task
 
     def index() {
-        redirect(action: "display", id:"1")
+        def taskId = operationsService.getFirstId()
+        redirect(action: "display", id:taskId)
     }
 
     def display(Long id) {
@@ -25,7 +28,20 @@ class TaskController {
     def update(Long id){
         def updatedTask= Task.get(id)
         updatedTask.properties = params
-        updatedTask.save()
+        updatedTask.save(flush: true)
+        redirect(action: "display", id: id)
+    }
+
+    def delete(Long id){
+        def task= Task.get(id)
+        task.delete(flush: true)
+        redirect(action: "index")
+    }
+
+    def finished(Long id){
+        def updatedTask= Task.get(id)
+        updatedTask.finished = !updatedTask.finished
+        updatedTask.save(flush: true)
         redirect(action: "display", id: id)
     }
 }

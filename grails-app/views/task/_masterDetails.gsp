@@ -34,7 +34,7 @@
                 <div class="col-sm-12 custom-scroll-column" style="padding-right: 0; margin-bottom: 3em;">
                     <div id="tasklist" class="list-group list-group-flush">
                         <g:each in="${taskList}" var="task">
-                            <a href="#" class="list-group-item list-group-item-action">
+                            <g:link action="display" id="${task.id}" class="list-group-item list-group-item-action">
                                 <h5>${task.name}</h5>
                                 <p> Task ID: ${task.id}
                                     <g:if test="${task.finished == true}">
@@ -44,7 +44,7 @@
                                         <span style="float: right"  class="text-danger">not completed</span>
                                     </g:else>
                                 </p>
-                            </a>
+                            </g:link>
                         </g:each>
                     </div>
                 </div>
@@ -108,11 +108,9 @@
                         </table>
                     </g:if>
                     <g:else >
-                        <g:form url="[resource:selectedTask, action:'update']" id="${selectedTask.id}" method="PUT" >
+                        <g:form name="taskData" url="[resource:selectedTask, action:'update']" id="${selectedTask.id}" method="PUT" >
                             <g:hiddenField name="version" value="${selectedTask?.version}" />
-                            <fieldset class="buttons">
-                                <g:actionSubmit class="save" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" />
-                            </fieldset>
+                            <g:hiddenField name="id" value="${selectedTask?.id}"/>
                             <fieldset class="form">
                                 <div style="margin-bottom: 0.5rem" class="fieldcontain ${hasErrors(bean: selectedTask, field: 'name', 'error')} ">
                                     <label class="custom-label" for="taskName">Title:</label>
@@ -167,30 +165,30 @@
                     </g:link>
                 </g:if>
                 <g:else>
-                    <!--<button type="submit" name="_action_update" class="btn btn-success btn-sm custom-btn custom-editBtn"><i class="fa fa-save" aria-hidden="true"></i>
-                        Save</button>-->
-                    <g:link name="create" id="${selectedTask.id}" action="update" class="save btn btn-success btn-sm custom-btn custom-editBtn" method="POST">
-                        <i class="fa fa-save" aria-hidden="true"></i>Save
-                    <!--<button type="button" name="updateTask" class="btn btn-success btn-sm custom-btn custom-editBtn"><i class="fa fa-save" aria-hidden="true"></i>
-                        Save</button>-->
-                    </g:link>
 
-                    <g:link action="display" id="${selectedTask.id}">
+                        <button type="submit" name="_action_update" class="btn btn-success btn-sm custom-btn custom-editBtn"><i class="fa fa-save" aria-hidden="true"></i>
+                            Save</button>
+                    <g:link action="display" id="${selectedTask.id}"
+                            onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default:'Are you sure?')}')">
                         <button type="button" class="btn btn-secondary btn-sm custom-btn custom-editBtn"><i class="fa fa-times" aria-hidden="true"></i>
                             Cancel</button>
                     </g:link>
-
-                    <button type="button" class="btn btn-danger btn-sm custom-btn custom-editBtn"><i class="fa fa-trash" aria-hidden="true"></i>
-                        Delete</button>
+                    <g:link action="delete" id="${selectedTask.id}"
+                            onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default:'Are you sure?')}')">
+                        <button type="button" class="btn btn-danger btn-sm custom-btn custom-editBtn">
+                            <i class="fa fa-trash" aria-hidden="true"></i> Delete</button>
+                    </g:link>
                 </g:else>
-                    <button type="button" class="btn btn-outline-light ">
-                        <g:if test="${selectedTask.finished}">
-                            <i class="fa fa-undo" aria-hidden="true"></i>
-                        </g:if>
-                        <g:else>
-                            <i class="fa fa-flag-checkered" aria-hidden="true"></i>
-                        </g:else>
-                    </button>
+                    <g:link action="finished" id="${selectedTask.id}">
+                        <button type="button" class="btn btn-outline-light ">
+                            <g:if test="${selectedTask.finished}">
+                                <i class="fa fa-undo" aria-hidden="true"></i>
+                            </g:if>
+                            <g:else>
+                                <i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                            </g:else>
+                        </button>
+                    </g:link>
             </nav>
         </div>
     </div> <!-- footer -->
@@ -202,33 +200,15 @@
     var subTitleValue = document.getElementById("subTitleValue"),
         subTitleLine = document.getElementById("subTitleLine");
 
-    if(subTitleValue.textContent.length > 0){
-        subTitleLine.hidden = false;
-    }else{
-        subTitleLine.hidden = true;
-    }
-
-
-    function onPressEdit(status) {
-        var edits = document.getElementsByClassName("custom-editBtn"),
-            shows = document.getElementsByClassName("custom-showBtn");
-
-        for(var i = 0; i< edits.length; i++){
-            var btn = edits[ i ];
-            btn.hidden = !status;
+    if(subTitleValue){
+        if(subTitleValue.textContent.length > 0){
+            subTitleLine.hidden = false;
+        }else{
+            subTitleLine.hidden = true;
         }
-
-        for(var i = 0; i< shows.length; i++){
-            var btn = shows[ i ];
-            btn.hidden = status;
-        }
-
     }
 
-    function onPressShow() {
-        $('.custom-showBtn').show()
-        $('.custom-editBtn').hide()
-    }
+
 
 </script>
 
