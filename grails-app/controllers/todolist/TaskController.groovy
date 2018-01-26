@@ -7,21 +7,40 @@ class TaskController {
     //static scaffold = Task
 
     def index() {
-        def taskId = operationsService.getFirstId()
-        redirect(action: "display", id:taskId)
+        def finishedStatus = params["finished"]
+        def searchField = params["search"]
+        def taskId = operationsService.getFirstId(finishedStatus, searchField)
+
+        if((finishedStatus != null)&&(searchField != null)){
+            redirect(action: "display", id:taskId, params:[finished: params["finished"], search: params["search"]])
+        }else if((finishedStatus != null)&&(searchField == null)){
+            redirect(action: "display", id:taskId, params:[finished: params["finished"]])
+        }else if(searchField != null){
+            redirect(action: "display", id:taskId, params:[search: params["search"]])
+        }else{
+            redirect(action: "display", id:taskId)
+        }
     }
 
     def display(Long id) {
-        def taskList = Task.list()
+        def finished = params["finished"]
+        def searchValue = params["search"]
+        def taskList = operationsService.getTaskList(finished, searchValue)
         def selectedTask= Task.get(id)
+        def listSize = taskList.size()
         //selectedTask.subName = "Subtitle 01"
-        [taskList: taskList, taskCount: Task.count(), selectedTask: selectedTask, show: true]
+
+        [taskList: taskList, taskCount: listSize, selectedTask: selectedTask, show: true]
 
     }
 
     def edit(Long id){
-        def taskList = Task.list()
+        def finished = params["finished"]
+        def searchValue = params["search"]
+        def taskList = operationsService.getTaskList(finished, searchValue)
         def selectedTask= Task.get(id)
+        def listSize = taskList.size()
+        //selectedTask.subName = "Subtitle 01"
         render(view: "display", model:[taskList: taskList, taskCount: Task.count(), selectedTask: selectedTask, show: false])
     }
 
@@ -44,4 +63,5 @@ class TaskController {
         updatedTask.save(flush: true)
         redirect(action: "display", id: id)
     }
+
 }

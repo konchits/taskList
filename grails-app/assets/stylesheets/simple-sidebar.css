@@ -130,7 +130,17 @@ body {
 
 .custom-footer {
   color: white;
+  background-color: #343a40;
   width: 100%;
+  height: 50;
+  align-content: center;
+  align-items: center;
+  padding: .5rem 1rem;
+  -webkit-box-align: center;
+  display: flex;
+    -webkit-box-pack: end!important;
+    -ms-flex-pack: end!important;
+    justify-content: flex-end!important;
 }
 
 .custom-details-page{
@@ -175,5 +185,9 @@ body {
 .custom-btn{
   width: 5rem;
   margin: 0 .25rem;
+}
+
+.pushedFilter {
+  color: #343a40;
 }
 

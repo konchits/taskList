@@ -15,18 +15,23 @@
             </ul>
         </div>
     </div><!-- header menu -->
-    <div class="row" style="height: 90vh" >
+    <div class="row" style="height: 84vh" >
         <div class="col-sm-4" style="padding-right: 0; padding-left: 0; height: 100%;" >
             <div class="row">
                 <div class="col-sm-12" >
-                    <div class="input-group" style="padding: 4">
-                        <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
-                        <div class="input-group-append">
-                            <span class="input-group-text" style="font-size: 1.5rem;">
-                                <i class="fa fa-search fa-fw"></i>
-                            </span>
+
+                    <g:form name="searchForm" action="display">
+                        <g:hiddenField name="version" value="${selectedTask?.version}" />
+                        <g:hiddenField name="id" value="${selectedTask?.id}"/>
+                        <div class="input-group" style="padding: 4px;">
+                            <g:field name="search" type="text" class="form-control" aria-label="Search Word"
+                                     value="${params?.search}" onsubmit="startSearch()" />
+                            <button type="submit" class="input-group-text"
+                                    style="border-top-left-radius: 0; border-bottom-left-radius: 0;" onclick="startSearch()">
+                                    <i class="fa fa-search fa-fw"></i>
+                            </button>
                         </div>
-                    </div>
+                    </g:form>
 
                 </div>
             </div> <!-- search area -->
@@ -34,7 +39,7 @@
                 <div class="col-sm-12 custom-scroll-column" style="padding-right: 0; margin-bottom: 3em;">
                     <div id="tasklist" class="list-group list-group-flush">
                         <g:each in="${taskList}" var="task">
-                            <g:link action="display" id="${task.id}" class="list-group-item list-group-item-action">
+                            <g:link action="display" id="${task.id}" params="${params}" class="list-group-item list-group-item-action">
                                 <h5>${task.name}</h5>
                                 <p> Task ID: ${task.id}
                                     <g:if test="${task.finished == true}">
@@ -51,7 +56,7 @@
             </div>
         </div>
         <div class="col-sm-8" style="height: 100%;border-left-style: groove;">
-            <div class="row" style="background-color: #fafafa; height: 13%">
+            <div class="row" style="background-color: #fafafa; height: 10em">
                 <div style="margin: 2em; width: 100%">
                     <div >
                         <h4 >${selectedTask?.name}</h4>
@@ -108,7 +113,8 @@
                         </table>
                     </g:if>
                     <g:else >
-                        <g:form name="taskData" url="[resource:selectedTask, action:'update']" id="${selectedTask.id}" method="PUT" >
+                        <g:form name="taskData" url="[resource:selectedTask, action:'update']" id="${selectedTask.id}"
+                                params="${params}" >
                             <g:hiddenField name="version" value="${selectedTask?.version}" />
                             <g:hiddenField name="id" value="${selectedTask?.id}"/>
                             <fieldset class="form">
@@ -125,15 +131,9 @@
                                     <g:textArea name="taskText" value="${selectedTask?.text}" rows="5" cols="41"></g:textArea>
                                 </div>
                             </fieldset>
-
-
                         </g:form>
-
-
                     </g:else>
                     <!-- end switch mode -->
-
-
                 </div>
                 <div class="tab-pane fade" id="nav-comment" role="tabpanel" aria-labelledby="nav-comment-tab" style="margin: 2em">
 
@@ -147,27 +147,41 @@
     </div> <!-- workspace -->
     <div class="row">
         <div class="col-sm-4 custom-column-wo-padding" >
-            <nav class="navbar navbar-dark bg-dark custom-footer justify-content-end"
+            <div class="custom-footer "
                  style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
-                <button type="button" class="btn btn-outline-light ">
-                    <i class="fa fa-filter"></i>
-                </button>
-            </nav>
+                <div id="filterDropDownMenu" class="btn-group dropup">
+                    <button  type="button" class="btn btn-dark btn-outline-light dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="pushFilter()">
+                        <i id="filterIcon" class="fa fa-filter"></i>
+                    </button>
+                    <div  class="dropdown-menu" >
+                        <g:link class="dropdown-item" action="display" id="${selectedTask.id}" params="[finished:true]">completed</g:link>
+                        <g:link class="dropdown-item" action="display" id="${selectedTask.id}" params="[finished:false]">not completed</g:link>
+                        <div class="dropdown-divider"></div>
+                        <g:link class="dropdown-item" action="display" id="${selectedTask.id}">All statuses</g:link>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="col-sm-8 custom-column-wo-padding " style="border-left-style: groove;">
             <nav class="navbar navbar-dark bg-dark custom-footer justify-content-end "
                  style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
                 <g:if test="${show}">
-                    <g:link action="edit" id="${selectedTask.id}">
+                    <g:link action="edit" id="${selectedTask.id}" params="${params}">
                         <button type="button" class="btn btn-primary btn-sm custom-btn custom-showBtn" ><i class="fa fa-pencil" aria-hidden="true"></i>
                             Edit</button>
                     </g:link>
                 </g:if>
                 <g:else>
 
-                        <button type="submit" name="_action_update" class="btn btn-success btn-sm custom-btn custom-editBtn"><i class="fa fa-save" aria-hidden="true"></i>
-                            Save</button>
+                        <button type="submit" class="btn btn-success btn-sm custom-btn custom-editBtn" onclick="submitData()">
+                            <i class="fa fa-save" aria-hidden="true"></i>
+                            Save
+                        </button>
+
+
                     <g:link action="display" id="${selectedTask.id}"
                             onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default:'Are you sure?')}')">
                         <button type="button" class="btn btn-secondary btn-sm custom-btn custom-editBtn"><i class="fa fa-times" aria-hidden="true"></i>
@@ -196,9 +210,12 @@
 </div>
 
 <script>
+
     // check if subtitle is empty then hide it
     var subTitleValue = document.getElementById("subTitleValue"),
         subTitleLine = document.getElementById("subTitleLine");
+
+
 
     if(subTitleValue){
         if(subTitleValue.textContent.length > 0){
@@ -207,6 +224,34 @@
             subTitleLine.hidden = true;
         }
     }
+
+    // events for dropdown menu of filter
+    function pushFilter(){
+
+        if(!($("#filterIcon").hasClass("pushedFilter"))) {
+            $('#filterIcon').addClass("pushedFilter");
+
+            //event for closing menu
+            $('#filterDropDownMenu').on('hide.bs.dropdown', function () {
+                $("#filterIcon").removeClass("pushedFilter");
+            })
+        }
+    }
+    
+    function startSearch() {
+        var i = 0;
+
+        if($("#search")['0'].value.length === 0){
+            $("#search").attr('disabled', true);
+        }
+
+    }
+
+    function submitData(){
+        var i = 0;
+    }
+
+
 
 
 
